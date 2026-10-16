@@ -2,70 +2,69 @@
 #define MODEL_H
 
 #include <vector>
-#include <string>
-#include <cmath>
 
-// Перечисление типов входных воздействий (пункт 10 ТЗ)
 enum class InputType {
-    STEP,       // Стуенчатое (u = const)
-    IMPULSE,    // Импульсное (u_0 = 1, u_tau>0 = 0)
-    HARMONIC    // Гармоническое (u = sin(tau))
+    STEP,
+    IMPULSE,
+    HARMONIC
 };
 
 class Model {
+private:
+    double y_prev1 = 0.0;
+    double y_prev2 = 0.0;
+    double y_prev3 = 0.0;
+
 protected:
-    double y_prev1; // y(tau)
-    double y_prev2; // y(tau - 1)
-    double y_prev3; // y(tau - 2)
-    double a, b, c; // Параметры модели
+    double getPrev1() const { return y_prev1; }
+    double getPrev2() const { return y_prev2; }
+    double getPrev3() const { return y_prev3; }
+    
+    void setPrev(double p1, double p2, double p3) {
+        y_prev1 = p1;
+        y_prev2 = p2;
+        y_prev3 = p3;
+    }
 
 public:
-    Model(double paramA, double paramB, double paramC = 0.0)
-        : y_prev1(0.0), y_prev2(0.0), y_prev3(0.0), a(paramA), b(paramB), c(paramC) {}
-    
+    explicit Model(double initial_y) {
+        y_prev1 = initial_y;
+    }
+
     virtual ~Model() = default;
 
-    // Метод сброса состояния перед новым экспериментом
-    virtual void reset(double initialY = 0.0) {
-        y_prev1 = initialY;
-        y_prev2 = initialY;
-        y_prev3 = initialY;
-    }
-
-    // Чисто виртуальный метод расчета следующего шага (пункт 9 ТЗ)
     virtual double calculateNext(double u, int step) = 0;
 
-    // Метод генерации входного воздействия (пункт 10 ТЗ)
-    double generateInput(InputType type, int step) const {
-        switch (type) {
-            case InputType::STEP:
-                return 1.0; // Константа
-            case InputType::IMPULSE:
-                return (step == 0) ? 1.0 : 0.0; // Импульс в начале
-            case InputType::HARMONIC:
-                return std::sin(step * 0.1); // Гармоническое воздействие
-        }
-        return 0.0;
-    }
-
-    // Запуск симуляции на n шагов (пункт 6 ТЗ)
-    std::vector<double> simulate(int steps, InputType inputType) {
-        reset();
+    virtual std::vector<double> simulate(int steps, InputType type) {
         std::vector<double> results;
-        results.reserve(steps);
-
-        for (int i = 0; i < steps; ++i) {
-            double u = generateInput(inputType, i);
-            double nextY = calculateNext(u, i);
-            results.push_back(nextY);
-            
-            // Сдвиг истории состояний
-            y_prev3 = y_prev2;
-            y_prev2 = y_prev1;
-            y_prev1 = nextY;
+        results.push_back(y_prev1);
+        
+        for (int i = 1; i < steps; ++i) {
+            double u = getSignal(type, i);
+            double next_y = calculateNext(u, i);
+            results.push_back(next_y);
         }
         return results;
     }
+
+    virtual void reset(double initial_y) {
+        y_prev1 = initial_y;
+        y_prev2 = 0.0;
+        y_prev3 = 0.0;
+    }
+
+    static double getSignal(InputType type, int tau) {
+        if (type == InputType::STEP) {
+            return 1.0;
+        }
+        if (type == InputType::IMPULSE) {
+            return (tau == 1) ? 1.0 : 0.0;
+        }
+        if (type == InputType::HARMONIC) {
+            return std::sin(static_cast<double>(tau));
+        }
+        return 0.0;
+    }
 };
 
-#endif // MODEL_H
+#endif 
