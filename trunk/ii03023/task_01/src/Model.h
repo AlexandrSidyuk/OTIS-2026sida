@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include <vector>
+#include <cmath> // Подключено для работы std::sin
 
 enum class InputType {
     STEP,
@@ -67,4 +68,4 @@ public:
     }
 };
 
-#endif 
+#endif // MODEL_H

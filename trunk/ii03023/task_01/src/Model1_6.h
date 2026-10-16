@@ -1,13 +1,19 @@
-#ifndef MODEL_1_6_H
-#define MODEL_1_6_H
+#ifndef MODEL1_6_H
+#define MODEL1_6_H
 
 #include "Model.h"
 
 class Model1_6 : public Model {
-    double a1, a2, a3, b_coef;
+private:
+    double a1;
+    double a2;
+    double a3;
+    double b;
+
 public:
-    Model1_6(double a1, double a2, double a3, double b);
+    explicit Model1_6(double a1_val, double a2_val, double a3_val, double b_val);
+    
     double calculateNext(double u, int step) override;
 };
 
-#endif // MODEL_1_6_H
+#endif // MODEL1_6_H
