@@ -23,7 +23,6 @@ void saveToCsv(const std::string& filename, const std::vector<double>& stepRes,
     }
     
     if (!file.is_open()) {
-        // Если не получилось, сохраним прямо здесь
         fullPath = filename;
         file.open(fullPath);
     }
@@ -36,7 +35,7 @@ void saveToCsv(const std::string& filename, const std::vector<double>& stepRes,
     std::cout << "[INFO] CSV файл успешно сохранен в: " << fullPath << "\n";
 }
 
-// Вывод таблицы результатов в консоль (пункт 5 ТЗ)
+// Вывод таблицы результатов в консоль
 void printTable(const std::string& modelName, const std::vector<double>& stepRes, 
                 const std::vector<double>& impulseRes, const std::vector<double>& harmonicRes) {
     std::cout << "\n=== Табличные результаты для " << modelName << " ===\n";
