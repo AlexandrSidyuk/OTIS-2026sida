@@ -2,7 +2,7 @@
 #define MODEL_H
 
 #include <vector>
-#include <cmath> // Подключено для работы std::sin
+#include <cmath>
 
 enum class InputType {
     STEP,
@@ -28,9 +28,8 @@ protected:
     }
 
 public:
-    explicit Model(double initial_y) {
-        y_prev1 = initial_y;
-    }
+    // Исправлено: инициализация через список инициализации
+    explicit Model(double initial_y) : y_prev1(initial_y) {}
 
     virtual ~Model() = default;
 
