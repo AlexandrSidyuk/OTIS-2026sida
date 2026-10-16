@@ -14,4 +14,4 @@ public:
     double calculateNext(double u, int step) override;
 };
 
-#endif 
+#endif // MODEL3_4_H
